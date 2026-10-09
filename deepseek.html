@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PythonCamp — аналог freeCodeCamp по Python</title>
+  <style>
+    /* ---------- Глобальные стили ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1.5rem;
+    }
+    .app {
+      max-width: 1100px;
+      width: 100%;
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+    /* ---------- Шапка ---------- */
+    header {
+      background: #0a0e1a;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 2px solid #2d3a5e;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .logo-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+      color: #ffd43b;
+    }
+    .logo h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: white;
+    }
+    .logo h1 span {
+      color: #ffd43b;
+    }
+    .progress-info {
+      background: #1e2a44;
+      padding: 0.6rem 1.2rem;
+      border-radius: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #b7c9e2;
+      border: 1px solid #324775;
+    }
+    .progress-info strong {
+      color: #ffd43b;
+      font-size: 1.1rem;
+      margin-right: 0.2rem;
+    }
+    .progress-bar-container {
+      width: 150px;
+      height: 8px;
+      background: #2d3a5e;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #ffd43b;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    /* ---------- Основной макет ---------- */
+    .main-layout {
+      display: flex;
+      flex-direction: row;
+      min-height: 600px;
+    }
+    /* ---------- Боковая панель (модули/уроки) ---------- */
+    .sidebar {
+      width: 280px;
+      background: #f8fafc;
+      border-right: 1px solid #e2e8f0;
+      padding: 1.5rem 0.75rem;
+      overflow-y: auto;
+      max-height: 700px;
+    }
+    .module-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      color: #64748b;
+      padding: 0 0.75rem 0.5rem;
+      margin-top: 1rem;
+    }
+    .module-title:first-of-type {
+      margin-top: 0;
+    }
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1e293b;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 0.2rem;
+      border-left: 4px solid transparent;
+    }
+    .lesson-item:hover {
+      background: #e9eef5;
+    }
+    .lesson-item.active {
+      background: #d9e2ef;
+      border-left: 4px solid #ffd43b;
+      font-weight: 600;
+      color: #0a0e1a;
+    }
+    .lesson-item.completed .check-icon {
+      color: #2b8a3e;
+    }
+    .check-icon {
+      margin-left: auto;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      width: 20px;
+      text-align: center;
+    }
+    .lesson-item .lesson-name {
+      flex: 1;
+    }
+    /* ---------- Область контента ---------- */
+    .content {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      overflow-y: auto;
+      max-height: 700px;
+      background: white;
+    }
+    .lesson-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .lesson-header h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0a0e1a;
+      letter-spacing: -0.5px;
+    }
+    .badge {
+      background: #e9eef5;
+      color: #1e2a44;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.3rem 0.9rem;
+      border-radius: 2rem;
+      text-transform: uppercase;
+    }
+    .theory-box {
+      background: #f8fafc;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      margin-bottom: 1.8rem;
+      border-left: 6px solid #ffd43b;
+      line-height: 1.6;
+      color: #1e293b;
+      font-size: 1rem;
+    }
+    .theory-box p {
+      margin-bottom: 0.75rem;
+    }
+    .theory-box code {
+      background: #e2e8f0;
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: #0f172a;
+    }
+    .code-example {
+      background: #0a0e1a;
+      color: #e2e8f0;
+      padding: 1.25rem 1.5rem;
+      border-radius: 1rem;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #2d3a5e;
+    }
+    .code-example .comment {
+      color: #94a3b8;
+    }
+    .code-example .keyword {
+      color: #ffd43b;
+    }
+    .code-example .string {
+      color: #a5d8ff;
+    }
+    .task-section {
+      background: #f1f5f9;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      margin: 1.8rem 0;
+      border: 1px solid #dbe4ee;
+    }
+    .task-section h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #0a0e1a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .task-description {
+      color: #334155;
+      margin-bottom: 1rem;
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+    .input-area {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 0.9rem;
+      border: 1px solid #cbd5e1;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.95rem;
+      background: white;
+      resize: vertical;
+      min-height: 100px;
+      transition: border 0.15s;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #ffd43b;
+      box-shadow: 0 0 0 3px rgba(255, 212, 59, 0.2);
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.7rem 1.6rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+    .btn-primary {
+      background: #0a0e1a;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #1e2a44;
+    }
+    .btn-secondary {
+      background: #e9eef5;
+      color: #1e293b;
+    }
+    .btn-secondary:hover {
+      background: #d9e2ef;
+    }
+    .btn-success {
+      background: #2b8a3e;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #236b31;
+    }
+    .result-message {
+      margin-top: 1rem;
+      padding: 0.9rem 1.2rem;
+      border-radius: 0.9rem;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .result-success {
+      background: #d3f9d8;
+      color: #14532d;
+      border-left: 5px solid #2b8a3e;
+    }
+    .result-error {
+      background: #ffe3e3;
+      color: #8b1e1e;
+      border-left: 5px solid #c92a2a;
+    }
+    .result-info {
+      background: #e7f5ff;
+      color: #0b4a6f;
+      border-left: 5px solid #1c7ed6;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    .nav-buttons .btn {
+      min-width: 110px;
+    }
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+    /* ---------- Адаптивность ---------- */
+    @media (max-width: 750px) {
+      .main-layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        max-height: 220px;
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        padding: 1rem;
+      }
+      .module-title {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      .lesson-item {
+        width: auto;
+        flex: 1 1 140px;
+      }
+      .content {
+        padding: 1.5rem;
+      }
+      .lesson-header h2 {
+        font-size: 1.4rem;
+      }
+      header {
+        padding: 1rem 1.5rem;
+      }
+    }
+    @media (max-width: 480px) {
+      body { padding: 1rem 0.75rem; }
+      .app { border-radius: 1.5rem; }
+      .content { padding: 1.25rem; }
+      .theory-box { padding: 1rem; }
+      .code-example { padding: 1rem; font-size: 0.85rem; }
+    }
+    /* скролл */
+    .sidebar::-webkit-scrollbar, .content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .sidebar::-webkit-scrollbar-track, .content::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .sidebar::-webkit-scrollbar-thumb, .content::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">
+      <span class="logo-icon">🐍</span>
+      <h1>Python<span>Camp</span></h1>
+    </div>
+    <div class="progress-info">
+      <span>Прогресс: <strong id="progress-text">0/12</strong></span>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <!-- Боковая панель с уроками -->
+    <aside class="sidebar" id="sidebar">
+      <!-- заполняется через JS -->
+    </aside>
+
+    <!-- Область контента -->
+    <main class="content" id="content">
+      <!-- динамическое содержимое -->
+    </main>
+  </div>
+</div>
+
+<script>
+  // ======================= ДАННЫЕ КУРСА =======================
+  const courseData = [
+    // Модуль 1: Основы Python
+    {
+      id: 'intro',
+      module: 'Модуль 1: Основы Python',
+      title: 'Введение в Python',
+      badge: 'Теория',
+      theory: `
+        <p><strong>Python</strong> — это высокоуровневый язык программирования общего назначения, который используется для веб-разработки, анализа данных, искусственного интеллекта и многого другого.</p>
+        <p>Python известен своим <strong>простым и читаемым синтаксисом</strong>. Первая программа традиционно выводит приветствие.</p>
+      `,
+      codeExample: `<span class="comment"># Моя первая программа на Python</span>
+print(<span class="string">"Привет, мир!"</span>)`,
+      task: {
+        question: 'Напишите команду, которая выводит текст "Hello, Python!"',
+        placeholder: 'Введите код здесь...',
+        answer: 'print("Hello, Python!")',
+        explanation: 'Используйте функцию print() со строкой в кавычках.'
+      }
+    },
+    {
+      id: 'variables',
+      module: 'Модуль 1: Основы Python',
+      title: 'Переменные и типы данных',
+      badge: 'Теория',
+      theory: `
+        <p><strong>Переменная</strong> — это именованная область памяти для хранения данных. В Python не нужно объявлять тип переменной заранее.</p>
+        <p>Основные типы: <code>int</code> (целые), <code>float</code> (дробные), <code>str</code> (строки), <code>bool</code> (логические).</p>
+      `,
+      codeExample: `<span class="comment"># Пример переменных</span>
+name = <span class="string">"Анна"</span>      <span class="comment"># str</span>
+age = 25             <span class="comment"># int</span>
+height = 1.68        <span class="comment"># float</span>
+is_student = True    <span class="comment"># bool</span>
+print(name, age, height, is_student)`,
+      task: {
+        question: 'Создайте переменную city со значением "Москва" и выведите её.',
+        placeholder: 'city = ...\nprint(...)',
+        answer: 'city = "Москва"\nprint(city)',
+        explanation: 'Присвойте строку переменной city, затем выведите её.'
+      }
+    },
+    {
+      id: 'input',
+      module: 'Модуль 1: Основы Python',
+      title: 'Ввод и вывод данных',
+      badge: 'Практика',
+      theory: `
+        <p>Функция <code>input()</code> позволяет получать данные от пользователя. Она всегда возвращает строку.</p>
+        <p>Для преобразования типов используйте <code>int()</code>, <code>float()</code> и т.д.</p>
+      `,
+      codeExample: `<span class="comment"># Запрос имени и приветствие</span>
+name = input(<span class="string">"Как вас зовут? "</span>)
+print(<span class="string">f"Привет, {name}!"</span>)`,
+      task: {
+        question: 'Напишите код, который запрашивает число и выводит его квадрат.',
+        placeholder: 'num = ...\nprint(...)',
+        answer: 'num = int(input())\nprint(num ** 2)',
+        explanation: 'Используйте input(), преобразуйте в int и возведите в квадрат.'
+      }
+    },
+    // Модуль 2: Управляющие конструкции
+    {
+      id: 'if-else',
+      module: 'Модуль 2: Управляющие конструкции',
+      title: 'Условные операторы if/else',
+      badge: 'Теория',
+      theory: `
+        <p>Условные операторы позволяют выполнять код в зависимости от условий.</p>
+        <p>Синтаксис: <code>if условие:</code> ... <code>elif другое_условие:</code> ... <code>else:</code> ...</p>
+      `,
+      codeExample: `age = 18
+<span class="keyword">if</span> age >= 18:
+    print(<span class="string">"Доступ разрешён"</span>)
+<span class="keyword">else</span>:
+    print(<span class="string">"Доступ запрещён"</span>)`,
+      task: {
+        question: 'Напишите условие: если число положительное, вывести "positive", иначе "negative".',
+        placeholder: 'num = int(input())\n...',
+        answer: 'num = int(input())\nif num > 0:\n    print("positive")\nelse:\n    print("negative")',
+        explanation: 'Используйте if num > 0: ... else: ...'
+      }
+    },
+    {
+      id: 'loops',
+      module: 'Модуль 2: Управляющие конструкции',
+      title: 'Циклы for и while',
+      badge: 'Теория',
+      theory: `
+        <p><strong>Цикл for</strong> используется для перебора последовательностей.</p>
+        <p><strong>Цикл while</strong> выполняется, пока условие истинно.</p>
+      `,
+      codeExample: `<span class="comment"># for: вывод чисел от 1 до 5</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> range(1, 6):
+    print(i)
+
+<span class="comment"># while: обратный отсчёт</span>
+count = 3
+<span class="keyword">while</span> count > 0:
+    print(count)
+    count -= 1`,
+      task: {
+        question: 'Напишите цикл, который выводит чётные числа от 2 до 10 включительно.',
+        placeholder: 'for ...',
+        answer: 'for i in range(2, 11, 2):\n    print(i)',
+        explanation: 'Используйте range(2, 11, 2) для чётных чисел.'
+      }
+    },
+    {
+      id: 'break-continue',
+      module: 'Модуль 2: Управляющие конструкции',
+      title: 'Операторы break и continue',
+      badge: 'Практика',
+      theory: `
+        <p><code>break</code> прерывает цикл, <code>continue</code> переходит к следующей итерации.</p>
+      `,
+      codeExample: `<span class="keyword">for</span> i <span class="keyword">in</span> range(10):
+    <span class="keyword">if</span> i == 5:
+        <span class="keyword">break</span>
+    print(i)`,
+      task: {
+        question: 'Выведите числа от 1 до 10, пропустив число 5 (используйте continue).',
+        placeholder: 'for ...',
+        answer: 'for i in range(1, 11):\n    if i == 5:\n        continue\n    print(i)',
+        explanation: 'Проверьте if i == 5: continue перед print.'
+      }
+    },
+    // Модуль 3: Структуры данных
+    {
+      id: 'lists',
+      module: 'Модуль 3: Структуры данных',
+      title: 'Списки (lists)',
+      badge: 'Теория',
+      theory: `
+        <p><strong>Список</strong> — упорядоченная изменяемая коллекция элементов.</p>
+        <p>Создаётся с помощью квадратных скобок: <code>[1, 2, 3]</code>.</p>
+      `,
+      codeExample: `fruits = [<span class="string">"яблоко"</span>, <span class="string">"банан"</span>, <span class="string">"вишня"</span>]
+print(fruits[0])      <span class="comment"># яблоко</span>
+fruits.append(<span class="string">"апельсин"</span>)
+print(fruits)`,
+      task: {
+        question: 'Создайте список чисел [10, 20, 30] и выведите его сумму.',
+        placeholder: 'numbers = ...\nprint(...)',
+        answer: 'numbers = [10, 20, 30]\nprint(sum(numbers))',
+        explanation: 'Используйте функцию sum() для списка.'
+      }
+    },
+    {
+      id: 'dicts',
+      module: 'Модуль 3: Структуры данных',
+      title: 'Словари (dicts)',
+      badge: 'Теория',
+      theory: `
+        <p><strong>Словарь</strong> хранит пары ключ-значение. Ключи должны быть неизменяемыми.</p>
+      `,
+      codeExample: `person = {<span class="string">"имя"</span>: <span class="string">"Иван"</span>, <span class="string">"возраст"</span>: 30}
+print(person[<span class="string">"имя"</span>])
+person[<span class="string">"город"</span>] = <span class="string">"Москва"</span>`,
+      task: {
+        question: 'Создайте словарь с ключами "a" и "b" со значениями 1 и 2, выведите значение по ключу "b".',
+        placeholder: 'd = {...}\nprint(...)',
+        answer: 'd = {"a": 1, "b": 2}\nprint(d["b"])',
+        explanation: 'Используйте фигурные скобки и обращение по ключу.'
+      }
+    },
+    {
+      id: 'tuples-sets',
+      module: 'Модуль 3: Структуры данных',
+      title: 'Кортежи и множества',
+      badge: 'Практика',
+      theory: `
+        <p><strong>Кортеж (tuple)</strong> — неизменяемая последовательность. <strong>Множество (set)</strong> — неупорядоченная коллекция уникальных элементов.</p>
+      `,
+      codeExample: `point = (3, 4)         <span class="comment"># tuple</span>
+unique = {1, 2, 3, 2}  <span class="comment"># set → {1, 2, 3}</span>`,
+      task: {
+        question: 'Создайте кортеж из трёх элементов и выведите его длину.',
+        placeholder: 't = (...)\nprint(...)',
+        answer: 't = (1, 2, 3)\nprint(len(t))',
+        explanation: 'Используйте len() для кортежа.'
+      }
+    },
+    // Модуль 4: Функции
+    {
+      id: 'functions',
+      module: 'Модуль 4: Функции',
+      title: 'Определение функций',
+      badge: 'Теория',
+      theory: `
+        <p><strong>Функция</strong> — блок кода, который можно вызывать многократно. Определяется с помощью <code>def</code>.</p>
+      `,
+      codeExample: `<span class="keyword">def</span> greet(name):
+    <span class="keyword">return</span> <span class="string">f"Привет, {name}!"</span>
+
+print(greet(<span class="string">"Мир"</span>))`,
+      task: {
+        question: 'Напишите функцию square(x), возвращающую квадрат числа.',
+        placeholder: 'def square(x):\n    ...',
+        answer: 'def square(x):\n    return x ** 2',
+        explanation: 'Используйте return x ** 2.'
+      }
+    },
+    {
+      id: 'args-kwargs',
+      module: 'Модуль 4: Функции',
+      title: 'Аргументы *args и **kwargs',
+      badge: 'Практика',
+      theory: `
+        <p><code>*args</code> позволяет передать произвольное число позиционных аргументов, <code>**kwargs</code> — именованных.</p>
+      `,
+      codeExample: `<span class="keyword">def</span> sum_all(*args):
+    <span class="keyword">return</span> sum(args)
+
+print(sum_all(1, 2, 3))  <span class="comment"># 6</span>`,
+      task: {
+        question: 'Создайте функцию, принимающую *args и возвращающую их количество.',
+        placeholder: 'def count_args(*args):\n    ...',
+        answer: 'def count_args(*args):\n    return len(args)',
+        explanation: 'Используйте len(args).'
+      }
+    },
+    // Модуль 5: Работа с файлами и модули
+    {
+      id: 'files',
+      module: 'Модуль 5: Файлы и модули',
+      title: 'Чтение и запись файлов',
+      badge: 'Теория',
+      theory: `
+        <p>Для работы с файлами используйте <code>open()</code> с режимами <code>'r'</code> (чтение), <code>'w'</code> (запись), <code>'a'</code> (добавление).</p>
+      `,
+      codeExample: `<span class="keyword">with</span> open(<span class="string">"file.txt"</span>, <span class="string">"w"</span>) <span class="keyword">as</span> f:
+    f.write(<span class="string">"Hello"</span>)`,
+      task: {
+        question: 'Напишите код, который открывает файл "test.txt" для записи и записывает строку "Python".',
+        placeholder: '...',
+        answer: 'with open("test.txt", "w") as f:\n    f.write("Python")',
+        explanation: 'Используйте with open(...) as f и f.write().'
+      }
+    },
+    {
+      id: 'modules',
+      module: 'Модуль 5: Файлы и модули',
+      title: 'Импорт модулей',
+      badge: 'Практика',
+      theory: `
+        <p>Модули подключаются с помощью <code>import</code>. Например, <code>import math</code>.</p>
+      `,
+      codeExample: `<span class="keyword">import</span> math
+print(math.sqrt(16))  <span class="comment"># 4.0</span>`,
+      task: {
+        question: 'Импортируйте модуль random и выведите случайное число от 1 до 10.',
+        placeholder: 'import ...\nprint(...)',
+        answer: 'import random\nprint(random.randint(1, 10))',
+        explanation: 'Используйте random.randint(1, 10).'
+      }
+    }
+  ];
+
+  // ======================= СОСТОЯНИЕ =======================
+  let currentLessonId = 'intro'; // id текущего урока
+  const completedLessons = new Set(); // множество id пройденных уроков
+
+  // ======================= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =======================
+  // Получить урок по id
+  function getLessonById(id) {
+    return courseData.find(lesson => lesson.id === id);
+  }
+
+  // Получить индекс урока
+  function getLessonIndex(id) {
+    return courseData.findIndex(lesson => lesson.id === id);
+  }
+
+  // Обновить прогресс в шапке
+  function updateProgress() {
+    const total = courseData.length;
+    const done = completedLessons.size;
+    document.getElementById('progress-text').textContent = `${done}/${total}`;
+    const percent = total > 0 ? (done / total) * 100 : 0;
+    document.getElementById('progress-bar').style.width = `${percent}%`;
+  }
+
+  // Отрисовать боковую панель
+  function renderSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    let html = '';
+    let currentModule = '';
+
+    courseData.forEach((lesson, index) => {
+      // Заголовок модуля, если он изменился
+      if (lesson.module !== currentModule) {
+        currentModule = lesson.module;
+        html += `<div class="module-title">${currentModule}</div>`;
+      }
+
+      const isActive = lesson.id === currentLessonId;
+      const isCompleted = completedLessons.has(lesson.id);
+      const activeClass = isActive ? 'active' : '';
+      const completedClass = isCompleted ? 'completed' : '';
+
+      html += `
+        <div class="lesson-item ${activeClass} ${completedClass}" data-lesson-id="${lesson.id}">
+          <span class="lesson-name">${lesson.title}</span>
+          <span class="check-icon">${isCompleted ? '✓' : '○'}</span>
+        </div>
+      `;
+    });
+
+    sidebar.innerHTML = html;
+
+    // Навешиваем обработчики
+    document.querySelectorAll('.lesson-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const id = el.dataset.lessonId;
+        if (id) {
+          currentLessonId = id;
+          renderSidebar();
+          renderContent();
+        }
+      });
+    });
+  }
+
+  // Отрисовать контент урока
+  function renderContent() {
+    const lesson = getLessonById(currentLessonId);
+    if (!lesson) return;
+
+    const content = document.getElementById('content');
+    const lessonIndex = getLessonIndex(currentLessonId);
+    const isFirst = lessonIndex === 0;
+    const isLast = lessonIndex === courseData.length - 1;
+    const isCompleted = completedLessons.has(currentLessonId);
+
+    // Формируем HTML
+    let html = `
+      <div class="lesson-header">
+        <h2>${lesson.title}</h2>
+        <span class="badge">${lesson.badge}</span>
+      </div>
+
+      <div class="theory-box">
+        ${lesson.theory}
+      </div>
+
+      <div class="code-example">
+        ${lesson.codeExample}
+      </div>
+    `;
+
+    // Если есть задание — добавляем блок
+    if (lesson.task) {
+      html += `
+        <div class="task-section">
+          <h3>📝 Задание</h3>
+          <div class="task-description">${lesson.task.question}</div>
+          <div class="input-area">
+            <textarea id="code-input" placeholder="${lesson.task.placeholder || 'Введите код...'}"></textarea>
+            <div class="button-group">
+              <button class="btn btn-primary" id="check-btn">Проверить</button>
+              <button class="btn btn-secondary" id="reset-btn">Сбросить</button>
+            </div>
+            <div id="result-message" class="result-message hidden"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Навигационные кнопки
+    html += `
+      <div class="nav-buttons">
+        <button class="btn btn-secondary" id="prev-btn" ${isFirst ? 'disabled' : ''}>← Назад</button>
+        <button class="btn btn-secondary" id="next-btn" ${isLast ? 'disabled' : ''}>Вперёд →</button>
+      </div>
+    `;
+
+    content.innerHTML = html;
+
+    // Восстанавливаем сохранённый ответ для текущего урока
+    const savedAnswer = localStorage.getItem(`pythoncamp_answer_${currentLessonId}`);
+    if (savedAnswer && document.getElementById('code-input')) {
+      document.getElementById('code-input').value = savedAnswer;
+    }
+
+    // Если урок уже пройден, показываем сообщение
+    if (isCompleted) {
+      const resultMsg = document.getElementById('result-message');
+      if (resultMsg) {
+        resultMsg.className = 'result-message result-success';
+        resultMsg.innerHTML = '✅ Этот урок уже пройден! Отличная работа!';
+        resultMsg.classList.remove('hidden');
+      }
+    }
+
+    // ----- Обработчики событий -----
+    // Проверка ответа
+    const checkBtn = document.getElementById('check-btn');
+    if (checkBtn) {
+      checkBtn.addEventListener('click', () => {
+        const input = document.getElementById('code-input').value.trim();
+        const resultMsg = document.getElementById('result-message');
+        const task = lesson.task;
+
+        if (!task) return;
+
+        // Сохраняем ответ
+        localStorage.setItem(`pythoncamp_answer_${currentLessonId}`, input);
+
+        // Нормализуем строки для сравнения (убираем пробелы в конце, приводим к нижнему регистру? Нет, лучше точное сравнение с удалением пробелов по краям)
+        const normalizedInput = input.replace(/\s+/g, ' ').trim();
+        const normalizedAnswer = task.answer.replace(/\s+/g, ' ').trim();
+
+        // Для простоты: если ответ содержит ключевые элементы или совпадает
+        // Более мягкая проверка: если введённый код содержит ответ (или наоборот) или точно совпадает
+        let isCorrect = false;
+        if (normalizedInput === normalizedAnswer) {
+          isCorrect = true;
+        } else {
+          // Альтернативная проверка: если ответ — многострочный, проверяем вхождение ключевых строк
+          const answerLines = task.answer.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+          const inputLines = input.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+          // Простейшая эвристика: если все строки ответа присутствуют во вводе
+          isCorrect = answerLines.every(line => inputLines.some(inpLine => inpLine.includes(line) || line.includes(inpLine)));
+          // Или если ввод содержит ответ как подстроку
+          if (!isCorrect && normalizedInput.includes(normalizedAnswer)) isCorrect = true;
+          if (!isCorrect && normalizedAnswer.includes(normalizedInput) && normalizedInput.length > 3) isCorrect = true;
+        }
+
+        if (isCorrect) {
+          resultMsg.className = 'result-message result-success';
+          resultMsg.innerHTML = '✅ Верно! Урок засчитан.';
+          resultMsg.classList.remove('hidden');
+
+          // Отмечаем урок как пройденный
+          if (!completedLessons.has(currentLessonId)) {
+            completedLessons.add(currentLessonId);
+            // Сохраняем в localStorage
+            localStorage.setItem('pythoncamp_completed', JSON.stringify([...completedLessons]));
+            updateProgress();
+            renderSidebar(); // обновим галочки
+          }
+        } else {
+          resultMsg.className = 'result-message result-error';
+          resultMsg.innerHTML = `❌ Не совсем. Попробуйте ещё раз.<br><small>Подсказка: ${task.explanation}</small>`;
+          resultMsg.classList.remove('hidden');
+        }
+      });
+    }
+
+    // Сброс ответа
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        const input = document.getElementById('code-input');
+        if (input) {
+          input.value = '';
+          localStorage.removeItem(`pythoncamp_answer_${currentLessonId}`);
+        }
+        const resultMsg = document.getElementById('result-message');
+        if (resultMsg) {
+          resultMsg.classList.add('hidden');
+        }
+      });
+    }
+
+    // Навигация: назад
+    const prevBtn = document.getElementById('prev-btn');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (lessonIndex > 0) {
+          currentLessonId = courseData[lessonIndex - 1].id;
+          renderSidebar();
+          renderContent();
+        }
+      });
+    }
+
+    // Навигация: вперёд
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        if (lessonIndex < courseData.length - 1) {
+          currentLessonId = courseData[lessonIndex + 1].id;
+          renderSidebar();
+          renderContent();
+        }
+      });
+    }
+  }
+
+  // Загрузка прогресса из localStorage
+  function loadProgress() {
+    const saved = localStorage.getItem('pythoncamp_completed');
+    if (saved) {
+      try {
+        const arr = JSON.parse(saved);
+        arr.forEach(id => completedLessons.add(id));
+      } catch (e) {}
+    }
+  }
+
+  // ======================= ИНИЦИАЛИЗАЦИЯ =======================
+  function init() {
+    loadProgress();
+    // Установим первый непройденный урок, если есть
+    const firstUncompleted = courseData.find(lesson => !completedLessons.has(lesson.id));
+    if (firstUncompleted) {
+      currentLessonId = firstUncompleted.id;
+    } else {
+      currentLessonId = courseData[0].id;
+    }
+    updateProgress();
+    renderSidebar();
+    renderContent();
+  }
+
+  // Запуск
+  init();
+</script>
+</body>
+</html>
