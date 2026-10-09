@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreePyCamp: Курс Python</title>
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-panel: #252526;
+            --text-light: #d4d4d4;
+            --text-comment: #6a9955;
+            --text-keyword: #569cd6;
+            --text-string: #ce9178;
+            --accent: #007acc;
+            --success: #4ec9b0;
+            --error: #f44747;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f0f2f5; color: #333; }
+        .progress-bar { height: 5px; background: #ddd; position: fixed; top: 0; left: 0; width: 0%; z-index: 100; transition: width 0.3s; }
+        .header { background: #fff; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 20px; color: var(--bg-dark); }
+        .tabs { display: flex; border-bottom: 1px solid #ddd; background: #fff; }
+        .tab { padding: 15px 20px; cursor: pointer; font-weight: 500; border-bottom: 3px solid transparent; }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .content { display: none; padding: 20px; max-width: 1200px; margin: 20px auto; }
+        .content.active { display: block; }
+        .lesson-text { background: var(--bg-panel); color: var(--text-light); padding: 20px; border-radius: 8px; line-height: 1.6; font-size: 16px; }
+        .lesson-text code { background: #333; padding: 2px 4px; border-radius: 4px; font-family: 'Courier New', monospace; }
+        .code-editor { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        textarea { width: 100%; max-width: 600px; height: 200px; background: #1e1e1e; color: #d4d4d4; border: 1px solid #333; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 14px; resize: vertical; }
+        .console { width: 100%; max-width: 600px; height: 200px; background: #000; color: #0f0; border: 1px solid #333; padding: 10px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 14px; overflow-y: auto; white-space: pre-wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-run { background: var(--accent); color: white; }
+        .btn-run:hover { background: #005a9e; }
+        .quiz { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .question { margin-bottom: 20px; }
+        .question h4 { margin-bottom: 10px; }
+        .options label { display: block; margin-bottom: 8px; cursor: pointer; }
+        .result { font-weight: bold; margin-top: 15px; padding: 10px; border-radius: 5px; display: none; }
+        .result.success { background: #d4edda; color: #155724; }
+        .result.error { background: #f8d7da; color: #721c24; }
+        .certificate { text-align: center; display: none; padding: 40px; background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .certificate h2 { color: var(--accent); }
+        .completed-module { display: inline-block; padding: 5px 10px; background: var(--success); color: white; border-radius: 15px; font-size: 12px; margin-left: 10px; }
+    </style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<header class="header">
+    <h1>🐍 FreePyCamp: Интерактивный курс Python</h1>
+    <div id="certBtn" style="display:none;">
+        <button class="btn" onclick="showCertificate()">Получить сертификат</button>
+    </div>
+</header>
+
+<div class="tabs">
+    <div class="tab active" onclick="openModule(0)">1. Введение</div>
+    <div class="tab" onclick="openModule(1)">2. Типы данных</div>
+    <div class="tab" onclick="openModule(2)">3. Циклы и условия</div>
+    <div class="tab" onclick="openModule(3)">4. Функции</div>
+    <div class="tab" onclick="openModule(4)">5. Финал</div>
+</div>
+
+<div id="modules">
+    <!-- Module 0 -->
+    <div class="content active" id="module0">
+        <div class="lesson-text">
+            <h2>Модуль 1: Введение в Python</h2>
+            <p>Python — это язык программирования высокого уровня. Его главные принципы — простота и читаемость. Код на Python часто выглядит как обычный английский текст.</p>
+            <p><strong>Первая программа:</strong> Традиционно обучение начинают с вывода фразы "Hello, World!" на экран.</p>
+            <p>В Python для этого используется функция <code>print()</code>.</p>
+            <div class="code-editor">
+                <textarea id="code0">print("Привет, FreePyCamp!")
+print("Я учусь программировать на Python.")</textarea>
+                <div>
+                    <button class="btn btn-run" onclick="runCode(0)">Run ▶️</button>
+                    <div class="console" id="console0"></div>
+                </div>
+            </div>
+        </div>
+        <div class="quiz">
+            <h3>Тест модуля 1</h3>
+            <div class="question">
+                <h4>1. Какая функция используется для вывода данных в консоль?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q0_1" value="0"> console.log()</label>
+                    <label><input type="radio" name="q0_1" value="1"> print()</label>
+                    <label><input type="radio" name="q0_1" value="2"> echo()</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>2. Как заканчивается строка кода в Python?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q0_2" value="0"> Точкой с запятой (;)</label>
+                    <label><input type="radio" name="q0_2" value="1"> Переводом строки (Enter)</label>
+                    <label><input type="radio" name="q0_2" value="2"> Запятой</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>3. Какой символ нельзя использовать в начале имени переменной?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q0_3" value="0"> Буква</label>
+                    <label><input type="radio" name="q0_3" value="1"> Цифра</label>
+                    <label><input type="radio" name="q0_3" value="2"> Нижнее подчеркивание</label>
+                </div>
+            </div>
+            <button class="btn" onclick="checkQuiz(0)">Проверить</button>
+            <div class="result" id="result0"></div>
+        </div>
+    </div>
+
+    <!-- Module 1 -->
+    <div class="content" id="module1">
+        <div class="lesson-text">
+            <h2>Модуль 2: Типы данных и переменные</h2>
+            <p>Переменные — это именованные ячейки памяти. В Python не нужно явно указывать тип данных, он определяется автоматически (динамическая типизация).</p>
+            <p><strong>Основные типы:</strong></p>
+            <ul>
+                <li><code>int</code> — целые числа (<code>age = 25</code>)</li>
+                <li><code>float</code> — числа с точкой (<code>price = 99.99</code>)</li>
+                <li><code>str</code> — строки (<code>name = "Иван"</code>)</li>
+                <li><code>bool</code> — булевы значения (<code>is_active = True</code>)</li>
+            </ul>
+            <div class="code-editor">
+                <textarea id="code1">name = "Алексей"
+age = 30
+height = 1.85
+is_student = False
+
+info = f"Имя: {name}, Возраст: {age}"
+print(info)
+print("Тип переменной age:", type(age))</textarea>
+                <div>
+                    <button class="btn btn-run" onclick="runCode(1)">Run ▶️</button>
+                    <div class="console" id="console1"></div>
+                </div>
+            </div>
+        </div>
+        <div class="quiz">
+            <h3>Тест модуля 2</h3>
+            <div class="question">
+                <h4>1. Какой тип данных будет у переменной x = 10 / 2?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q1_1" value="0"> int</label>
+                    <label><input type="radio" name="q1_1" value="1"> float</label>
+                    <label><input type="radio" name="q1_1" value="2"> str</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>2. Какой оператор используется для склеивания (конкатенации) строк?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q1_2" value="0"> +</label>
+                    <label><input type="radio" name="q1_2" value="1"> &</label>
+                    <label><input type="radio" name="q1_2" value="2"> ,</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>3. Как проверить тип переменной?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q1_3" value="0"> typeof()</label>
+                    <label><input type="radio" name="q1_3" value="1"> type()</label>
+                    <label><input type="radio" name="q1_3" value="2"> .type</label>
+                </div>
+            </div>
+            <button class="btn" onclick="checkQuiz(1)">Проверить</button>
+            <div class="result" id="result1"></div>
+        </div>
+    </div>
+
+    <!-- Module 2 -->
+    <div class="content" id="module2">
+        <div class="lesson-text">
+            <h2>Модуль 3: Условия и циклы</h2>
+            <p>Программы должны уметь принимать решения. Для этого используются условные операторы <code>if</code>, <code>elif</code>, <code>else</code>.</p>
+            <p>Для повторения действий используются циклы. Самый популярный — <code>for</code>.</p>
+            <div class="code-editor">
+                <textarea id="code2">numbers = [1, 5, 12, 8, 20, 3]
+even_numbers = []
+
+for num in numbers:
+    if num > 10:
+        print(f"{num} больше 10")
+    if num % 2 == 0:
+        even_numbers.append(num)
+
+print("Четные числа:", even_numbers)</textarea>
+                <div>
+                    <button class="btn btn-run" onclick="runCode(2)">Run ▶️</button>
+                    <div class="console" id="console2"></div>
+                </div>
+            </div>
+        </div>
+        <div class="quiz">
+            <h3>Тест модуля 3</h3>
+            <div class="question">
+                <h4>1. Какое ключевое слово используется для проверки второго условия (если первое не сработало)?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q2_1" value="0"> elseif</label>
+                    <label><input type="radio" name="q2_1" value="1"> elif</label>
+                    <label><input type="radio" name="q2_1" value="2"> else if</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>2. Какой цикл подойдет, если мы заранее не знаем, сколько раз нужно повториться?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q2_2" value="0"> for</label>
+                    <label><input type="radio" name="q2_2" value="1"> while</label>
+                    <label><input type="radio" name="q2_2" value="2"> repeat</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>3. Что выведет код: print(bool(0))?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q2_3" value="0"> True</label>
+                    <label><input type="radio" name="q2_3" value="1"> False</label>
+                    <label><input type="radio" name="q2_3" value="2"> 0</label>
+                </div>
+            </div>
+            <button class="btn" onclick="checkQuiz(2)">Проверить</button>
+            <div class="result" id="result2"></div>
+        </div>
+    </div>
+
+    <!-- Module 3 -->
+    <div class="content" id="module3">
+        <div class="lesson-text">
+            <h2>Модуль 4: Функции</h2>
+            <p>Функция — это переиспользуемый блок кода. Она объявляется с помощью ключевого слова <code>def</code>. Функции могут принимать аргументы и возвращать результат через <code>return</code>.</p>
+            <div class="code-editor">
+                <textarea id="code3">def calculate_rectangle(a, b):
+    perimeter = 2 * (a + b)
+    area = a * b
+    return perimeter, area
+
+p, s = calculate_rectangle(5, 10)
+print(f"Периметр: {p}")
+print(f"Площадь: {s}")
+
+# Lambda функция (короткая функция в одну строку)
+square = lambda x: x * x
+print("Квадрат числа 7:", square(7))</textarea>
+                <div>
+                    <button class="btn btn-run" onclick="runCode(3)">Run ▶️</button>
+                    <div class="console" id="console3"></div>
+                </div>
+            </div>
+        </div>
+        <div class="quiz">
+            <h3>Тест модуля 4</h3>
+            <div class="question">
+                <h4>1. Какое ключевое слово используется для создания функции?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q3_1" value="0"> function</label>
+                    <label><input type="radio" name="q3_1" value="1"> def</label>
+                    <label><input type="radio" name="q3_1" value="2"> func</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>2. Что делает оператор return?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q3_2" value="0"> Выводит текст в консоль</label>
+                    <label><input type="radio" name="q3_2" value="1"> Завершает функцию и возвращает значение</label>
+                    <label><input type="radio" name="q3_2" value="2"> Перезагружает скрипт</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>3. Какое значение вернет функция, если в ней нет оператора return?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q3_3" value="0"> 0</label>
+                    <label><input type="radio" name="q3_3" value="1"> None</label>
+                    <label><input type="radio" name="q3_3" value="2"> Ошибка</label>
+                </div>
+            </div>
+            <button class="btn" onclick="checkQuiz(3)">Проверить</button>
+            <div class="result" id="result3"></div>
+        </div>
+    </div>
+
+    <!-- Module 4 -->
+    <div class="content" id="module4">
+        <div class="lesson-text">
+            <h2>Модуль 5: Финальный проект</h2>
+            <p>Поздравляем! Вы изучили основы. Теперь объединим знания в небольшую программу — простой калькулятор с текстовым меню.</p>
+            <div class="code-editor">
+                <textarea id="code4">def add(x, y):
+    return x + y
+
+def subtract(x, y):
+    return x - y
+
+while True:
+    print("\n--- МЕНЮ КАЛЬКУЛЯТОРА ---")
+    print("1. Сложение")
+    print("2. Вычитание")
+    print("3. Выход")
+    
+    choice = input("Выберите действие (1/2/3): ")
+    
+    if choice == '3':
+        print("До свидания!")
+        break
+        
+    if choice in ('1', '2'):
+        try:
+            a = float(input("Введите первое число: "))
+            b = float(input("Введите второе число: "))
+        except ValueError:
+            print("Ошибка! Введите числа.")
+            continue
+
+        if choice == '1':
+            print(f"Результат: {add(a, b)}")
+        elif choice == '2':
+            print(f"Результат: {subtract(a, b)}")
+    else:
+        print("Неверный выбор!")</textarea>
+                <div>
+                    <button class="btn btn-run" onclick="runCode(4)">Run ▶️</button>
+                    <div class="console" id="console4"></div>
+                </div>
+            </div>
+            <p><strong>Задание:</strong> Попробуйте добавить в калькулятор операцию умножения (кнопка 3 в меню) и деления (кнопка 4).</p>
+        </div>
+        <div class="quiz">
+            <h3>Финальный тест</h3>
+            <div class="question">
+                <h4>1. Как остановить бесконечный цикл while True изнутри?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q4_1" value="0"> stop()</label>
+                    <label><input type="radio" name="q4_1" value="1"> break</label>
+                    <label><input type="radio" name="q4_1" value="2"> exit</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>2. Какая функция используется для ввода данных от пользователя?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q4_2" value="0"> input()</label>
+                    <label><input type="radio" name="q4_2" value="1"> scan()</label>
+                    <label><input type="radio" name="q4_2" value="2"> read()</label>
+                </div>
+            </div>
+            <div class="question">
+                <h4>3. Что делает конструкция try...except?</h4>
+                <div class="options">
+                    <label><input type="radio" name="q4_3" value="0"> Ускоряет код</label>
+                    <label><input type="radio" name="q4_3" value="1"> Отлавливает и обрабатывает ошибки</label>
+                    <label><input type="radio" name="q4_3" value="2"> Создает резервную копию</label>
+                </div>
+            </div>
+            <button class="btn" onclick="checkQuiz(4, true)">Проверить и завершить курс</button>
+            <div class="result" id="result4"></div>
+        </div>
+    </div>
+</div>
+
+<div id="certificate" class="certificate">
+    <h2>🎓 Certificate of Completion</h2>
+    <p>Настоящим подтверждается, что</p>
+    <h3 id="certName">Ученик FreePyCamp</h3>
+    <p>успешно завершил(а) интерактивный курс</p>
+    <h4>"Основы Python"</h4>
+    <p>Дата: <span id="certDate"></span></p>
+    <button class="btn" onclick="window.print()">Распечатать</button>
+</div>
+
+<script>
+    const modules = document.querySelectorAll('.content');
+    const tabs = document.querySelectorAll('.tab');
+    const progressBar = document.getElementById('progressBar');
+    const certBtn = document.getElementById('certBtn');
+    const certificate = document.getElementById('certificate');
+    
+    let completedModules = JSON.parse(localStorage.getItem('pyCampProgress') || '[]');
+    let currentModule = 0;
+
+    function openModule(index) {
+        currentModule = index;
+        modules.forEach(m => m.classList.remove('active'));
+        tabs.forEach(t => t.classList.remove('active'));
+        modules[index].classList.add('active');
+        tabs[index].classList.add('active');
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const progress = ((currentModule + 1) / modules.length) * 100;
+        progressBar.style.width = progress + '%';
+        
+        // Сохраняем прогресс
+        if (!completedModules.includes(currentModule)) {
+            completedModules.push(currentModule);
+            localStorage.setItem('pyCampProgress', JSON.stringify(completedModules));
+        }
+
+        // Если открыты все модули, показываем кнопку сертификата
+        if (completedModules.length === modules.length) {
+            certBtn.style.display = 'block';
+        }
+    }
+
+    function runCode(moduleId) {
+        const code = document.getElementById('code' + moduleId).value;
+        const consoleEl = document.getElementById('console' + moduleId);
+        consoleEl.innerHTML = 'Выполнение...\n';
+        
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        const iframeDoc = iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(`
+            <html><body>
+            <script>
+            const oldLog = console.log;
+            console.log = function(msg) {
+                window.parent.document.getElementById('console${moduleId}').innerHTML += msg + '\\n';
+            };
+            try {
+                ${code}
+            } catch(e) {
+                console.log('Ошибка: ' + e.message);
+            }
+            <\/script>
+            </body></html>
+        `);
+        iframeDoc.close();
+        
+        setTimeout(() => {
+            document.body.removeChild(iframe);
+        }, 1000);
+    }
+
+    function checkQuiz(moduleId, isFinal = false) {
+        const answers = [
+            // Module 0
+            {1: 1, 2: 1, 3: 1},
+            // Module 1
+            {1: 1, 2: 0, 3: 1},
+            // Module 2
+            {1: 1, 2: 1, 3: 1},
+            // Module 3
+            {1: 1, 2: 1, 3: 1},
+            // Module 4
+            {1: 1, 2: 0, 3: 1}
+        ];
+        
+        let score = 0;
+        for (let i = 1; i <= 3; i++) {
+            const radios = document.getElementsByName('q' + moduleId + '_' + i);
+            for (let radio of radios) {
+                if (radio.checked) {
+                    if (parseInt(radio.value) === answers[moduleId][i]) {
+                        score++;
+                    }
+                    break;
+                }
+            }
+        }
+        
+        const resultEl = document.getElementById('result' + moduleId);
+        resultEl.style.display = 'block';
+        
+        if (score === 3) {
+            resultEl.className = 'result success';
+            resultEl.innerHTML = '✅ Отлично! Тест пройден.';
+            if (isFinal) {
+                completeCourse();
+            }
+        } else {
+            resultEl.className = 'result error';
+            resultEl.innerHTML = `❌ Ошибка. Правильных ответов: ${score} из 3. Попробуйте еще раз.`;
+        }
+    }
+
+    function completeCourse() {
+        certBtn.style.display = 'block';
+        showCertificate();
+    }
+
+    function showCertificate() {
+        const date = new Date().toLocaleDateString('ru-RU');
+        document.getElementById('certDate').innerText = date;
+        document.getElementById('certName').innerText = prompt('Введите ваше имя для сертификата:', 'Алексей Петров') || 'Ученик FreePyCamp';
+        modules.forEach(m => m.style.display = 'none');
+        document.querySelector('.tabs').style.display = 'none';
+        certificate.style.display = 'block';
+        progressBar.style.display = 'none';
+    }
+
+    // Инициализация: подсвечиваем пройденные модули
+    completedModules.forEach(id => {
+        tabs[id].innerHTML += ' <span class="completed-module">✔️</span>';
+    });
+    if (completedModules.length > 0) {
+        openModule(Math.min(...completedModules));
+    }
+</script>
+</body>
+</html>
